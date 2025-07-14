@@ -37,8 +37,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include all the API endpoints from the v1 router without any prefix
-app.include_router(v1_routes.router)
+# Include all the API endpoints from the v1 router WITH the /api/v1 prefix
+app.include_router(v1_routes.router, prefix="/api/v1")
 
 
 @app.get("/")
