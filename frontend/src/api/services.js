@@ -23,6 +23,21 @@ export const registerUser = async (userData) => {
   }
 };
 
+// --- ADD THESE TO api/services.js ---
+
+export const generate2FA = async () => {
+  const response = await axiosInstance.post('/users/me/2fa/generate');
+  return response.data;
+};
+
+export const enable2FA = async (secret_key, two_fa_code) => {
+  const response = await axiosInstance.post('/users/me/2fa/enable', {
+    secret_key,
+    two_fa_code,
+  });
+  return response.data;
+};
+
 // --- User & Profile Services ---
 
 export const getMyProfile = async () => {
