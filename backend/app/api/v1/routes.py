@@ -235,6 +235,65 @@ def perform_daily_checkin(
         "new_zp_balance": current_user.zp_balance,
     }
 
+# --- ADD THIS CODE TO YOUR api/v1/routes.py FILE ---
+
+# =================================================================
+#                 --- TWO-FACTOR AUTHENTICATION ---
+# =================================================================
+
+@router.post("/users/me/2fa/generate", response_model=user_schemas.TwoFAGenerationResponse)
+def generate_2fa_secret(
+    current_user: Annotated[models.User, Depends(get_active_user)]
+):
+    """
+    Generates a new 2FA secret and a QR code URI for the user to scan.
+    """
+    if current_user.is_2fa_enabled:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="2FA is already enabled for this account.",
+        )
+    
+    # NOTE: In a real production app, you might temporarily store the secret 
+    # in the DB until verification. For simplicity here, we generate and return it.
+    secret_key = two_fa_service.generate_totp_secret()
+    qr_code_uri = two_fa_service.generate_totp_uri(secret_key, current_user.email)
+    
+    return {"secret_key": secret_key, "qr_code_uri": qr_code_uri}
+
+
+@router.post("/users/me/2fa/enable", status_code=status.HTTP_204_NO_CONTENT)
+def enable_2fa(
+    two_fa_data: user_schemas.TwoFAEnableRequest,
+    current_user: Annotated[models.User, Depends(get_active_user)],
+    db: Annotated[Session, Depends(database.get_db)],
+):
+    """
+    Verifies the 2FA code and enables 2FA for the user's account.
+    """
+    if current_user.is_2fa_enabled:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="2FA is already enabled.",
+        )
+
+    is_valid = two_fa_service.verify_totp_code(
+        two_fa_data.secret_key, two_fa_data.two_fa_code
+    )
+    
+    if not is_valid:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid 2FA code. Please try again.",
+        )
+        
+    current_user.two_fa_secret = two_fa_data.secret_key
+    current_user.is_2fa_enabled = True
+    db.commit()
+    
+    return
+    } 
+
 # =================================================================
 #                         --- ZP MINING ---
 # =================================================================
