@@ -285,5 +285,27 @@ def create_new_microjob(
     """Allows an authenticated user to post a new micro-job."""
     return microjobs_service.create_microjob(db, current_user, job_data)
 
+# --- ADD THIS CODE TO YOUR api/v1/routes.py FILE ---
+
+@router.get("/tasks", response_model=List[task_schemas.TaskResponse])
+def read_available_tasks(
+    current_user: Annotated[models.User, Depends(get_active_user)],
+    db: Annotated[Session, Depends(database.get_db)],
+):
+    """
+    Retrieves all available tasks for the current authenticated user.
+    """
+    return tasks_service.get_available_tasks(db=db, user_id=current_user.id)
+
+
+@router.get("/micro-jobs", response_model=List[microjob_schemas.MicroJobResponse])
+def read_available_micro_jobs(db: Annotated[Session, Depends(database.get_db)]):
+    """
+    Retrieves all publicly available and active micro-jobs.
+    """
+    return microjobs_service.get_microjobs(db=db)
+
+# --- END OF CODE TO ADD ---
+
 
 # Add more endpoints here as they are developed
