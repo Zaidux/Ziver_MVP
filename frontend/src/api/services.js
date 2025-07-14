@@ -4,8 +4,7 @@ import axiosInstance from './axiosInstance';
 
 export const loginUser = async (loginData) => {
   try {
-    // Note: Your backend /token endpoint now accepts JSON, so we send the object directly.
-    const response = await axiosInstance.post('/token', loginData);
+    const response = await axiosInstance.post('/api/v1/token', loginData);
     return response.data;
   } catch (error) {
     console.error('Login failed:', error.response?.data || error.message);
@@ -15,7 +14,7 @@ export const loginUser = async (loginData) => {
 
 export const registerUser = async (userData) => {
   try {
-    const response = await axiosInstance.post('/register', userData);
+    const response = await axiosInstance.post('/api/v1/register', userData);
     return response.data;
   } catch (error) {
     console.error('Registration failed:', error.response?.data || error.message);
@@ -23,26 +22,11 @@ export const registerUser = async (userData) => {
   }
 };
 
-// --- ADD THESE TO api/services.js ---
-
-export const generate2FA = async () => {
-  const response = await axiosInstance.post('/users/me/2fa/generate');
-  return response.data;
-};
-
-export const enable2FA = async (secret_key, two_fa_code) => {
-  const response = await axiosInstance.post('/users/me/2fa/enable', {
-    secret_key,
-    two_fa_code,
-  });
-  return response.data;
-};
-
 // --- User & Profile Services ---
 
 export const getMyProfile = async () => {
   try {
-    const response = await axiosInstance.get('/users/me');
+    const response = await axiosInstance.get('/api/v1/users/me');
     return response.data;
   } catch (error) {
     console.error('Failed to get profile:', error.response?.data || error.message);
@@ -52,7 +36,7 @@ export const getMyProfile = async () => {
 
 export const linkWallet = async (walletAddress) => {
     try {
-        const response = await axiosInstance.post('/users/me/link-wallet', { wallet_address: walletAddress });
+        const response = await axiosInstance.post('/api/v1/users/me/link-wallet', { wallet_address: walletAddress });
         return response.data;
     } catch (error) {
         console.error('Failed to link wallet:', error.response?.data || error.message);
@@ -60,11 +44,24 @@ export const linkWallet = async (walletAddress) => {
     }
 };
 
+export const generate2FA = async () => {
+  const response = await axiosInstance.post('/api/v1/users/me/2fa/generate');
+  return response.data;
+};
+
+export const enable2FA = async (secret_key, two_fa_code) => {
+  const response = await axiosInstance.post('/api/v1/users/me/2fa/enable', {
+    secret_key,
+    two_fa_code,
+  });
+  return response.data;
+};
+
 // --- Mining Services ---
 
 export const startMiningCycle = async () => {
   try {
-    const response = await axiosInstance.post('/mining/start');
+    const response = await axiosInstance.post('/api/v1/mining/start');
     return response.data;
   } catch (error) {
     console.error('Failed to start mining:', error.response?.data || error.message);
@@ -74,7 +71,7 @@ export const startMiningCycle = async () => {
 
 export const claimMinedZp = async () => {
   try {
-    const response = await axiosInstance.post('/mining/claim');
+    const response = await axiosInstance.post('/api/v1/mining/claim');
     return response.data;
   } catch (error) {
     console.error('Failed to claim ZP:', error.response?.data || error.message);
@@ -84,7 +81,7 @@ export const claimMinedZp = async () => {
 
 export const upgradeMiner = async (upgradeData) => {
   try {
-    const response = await axiosInstance.post('/mining/upgrade', upgradeData);
+    const response = await axiosInstance.post('/api/v1/mining/upgrade', upgradeData);
     return response.data;
   } catch (error) {
     console.error('Failed to upgrade miner:', error.response?.data || error.message);
@@ -96,7 +93,7 @@ export const upgradeMiner = async (upgradeData) => {
 
 export const getAvailableTasks = async () => {
     try {
-        const response = await axiosInstance.get('/tasks');
+        const response = await axiosInstance.get('/api/v1/tasks');
         return response.data;
     } catch (error) {
         console.error('Failed to fetch tasks:', error.response?.data || error.message);
@@ -106,7 +103,7 @@ export const getAvailableTasks = async () => {
 
 export const completeTask = async (taskId) => {
     try {
-        const response = await axiosInstance.post(`/tasks/${taskId}/complete`);
+        const response = await axiosInstance.post(`/api/v1/tasks/${taskId}/complete`);
         return response.data;
     } catch (error) {
         console.error('Failed to complete task:', error.response?.data || error.message);
@@ -116,9 +113,9 @@ export const completeTask = async (taskId) => {
 
 export const createSponsoredTask = async (taskData) => {
     try {
-        const response = await axiosInstance.post('/tasks/sponsor', taskData);
+        const response = await axiosInstance.post('/api/v1/tasks/sponsor', taskData);
         return response.data;
-    } catch (error) {
+    } catch (error)
         console.error('Failed to create sponsored task:', error.response?.data || error.message);
         throw error;
     }
@@ -128,7 +125,7 @@ export const createSponsoredTask = async (taskData) => {
 
 export const getMicrojobs = async () => {
     try {
-        const response = await axiosInstance.get('/microjobs');
+        const response = await axiosInstance.get('/api/v1/microjobs');
         return response.data;
     } catch (error) {
         console.error('Failed to fetch micro-jobs:', error.response?.data || error.message);
@@ -138,7 +135,7 @@ export const getMicrojobs = async () => {
 
 export const createMicrojob = async (jobData) => {
     try {
-        const response = await axiosInstance.post('/microjobs', jobData);
+        const response = await axiosInstance.post('/api/v1/microjobs', jobData);
         return response.data;
     } catch (error) {
         console.error('Failed to create micro-job:', error.response?.data || error.message);
@@ -148,7 +145,7 @@ export const createMicrojob = async (jobData) => {
 
 export const activateJob = async (jobId) => {
     try {
-        const response = await axiosInstance.post(`/microjobs/${jobId}/activate`);
+        const response = await axiosInstance.post(`/api/v1/microjobs/${jobId}/activate`);
         return response.data;
     } catch (error) {
         console.error('Failed to activate job:', error.response?.data || error.message);
