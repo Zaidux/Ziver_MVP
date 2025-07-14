@@ -76,7 +76,6 @@ async def get_active_user(
         )
     return current_user
 
-
 # =================================================================
 #              --- AUTHENTICATION & USER MANAGEMENT ---
 # =================================================================
@@ -142,7 +141,6 @@ def login_for_access_token(
     Authenticates a user with email and password, returns JWT token.
     Handles optional 2FA.
     """
-    # The fix is on this line: .username is changed to .email
     user = db.query(models.User).filter(models.User.email == login_data.email).first()
 
     if not user or not security.verify_password(
@@ -233,13 +231,8 @@ def perform_daily_checkin(
         ),
         "zp_claimed": zp_bonus,
         "new_zp_balance": current_user.zp_balance,
+    }
 
-
-# --- ADD THIS CODE TO YOUR api/v1/routes.py FILE ---
-
-# =================================================================
-#                 --- TWO-FACTOR AUTHENTICATION ---
-# =================================================================
 
 @router.post("/users/me/2fa/generate", response_model=user_schemas.TwoFAGenerationResponse)
 def generate_2fa_secret(
@@ -253,12 +246,10 @@ def generate_2fa_secret(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="2FA is already enabled for this account.",
         )
-    
-    # NOTE: In a real production app, you might temporarily store the secret 
-    # in the DB until verification. For simplicity here, we generate and return it.
+
     secret_key = two_fa_service.generate_totp_secret()
     qr_code_uri = two_fa_service.generate_totp_uri(secret_key, current_user.email)
-    
+
     return {"secret_key": secret_key, "qr_code_uri": qr_code_uri}
 
 
@@ -280,24 +271,22 @@ def enable_2fa(
     is_valid = two_fa_service.verify_totp_code(
         two_fa_data.secret_key, two_fa_data.two_fa_code
     )
-    
+
     if not is_valid:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid 2FA code. Please try again.",
         )
-        
+
     current_user.two_fa_secret = two_fa_data.secret_key
     current_user.is_2fa_enabled = True
     db.commit()
-    
+
     return
-    } 
 
 # =================================================================
 #                         --- ZP MINING ---
 # =================================================================
-
 
 @router.post("/mining/start", response_model=mining_schemas.MiningStartResponse)
 def start_mining_cycle(
@@ -327,9 +316,22 @@ def upgrade_miner_stats(
     return mining_service.upgrade_miner(db, current_user, upgrade_req)
 
 # =================================================================
-#                  --- MICRO-JOB MARKETPLACE ---
+#                           --- TASKS ---
 # =================================================================
 
+@router.get("/tasks", response_model=List[task_schemas.TaskResponse])
+def read_available_tasks(
+    current_user: Annotated[models.User, Depends(get_active_user)],
+    db: Annotated[Session, Depends(database.get_db)],
+):
+    """
+    Retrieves all available tasks for the current authenticated user.
+    """
+    return tasks_service.get_available_tasks(db=db, user_id=current_user.id)
+
+# =================================================================
+#                  --- MICRO-JOB MARKETPLACE ---
+# =================================================================
 
 @router.post(
     "/microjobs",
@@ -344,27 +346,10 @@ def create_new_microjob(
     """Allows an authenticated user to post a new micro-job."""
     return microjobs_service.create_microjob(db, current_user, job_data)
 
-# --- ADD THIS CODE TO YOUR api/v1/routes.py FILE ---
 
-@router.get("/tasks", response_model=List[task_schemas.TaskResponse])
-def read_available_tasks(
-    current_user: Annotated[models.User, Depends(get_active_user)],
-    db: Annotated[Session, Depends(database.get_db)],
-):
-    """
-    Retrieves all available tasks for the current authenticated user.
-    """
-    return tasks_service.get_available_tasks(db=db, user_id=current_user.id)
-
-
-@router.get("/micro-jobs", response_model=List[microjob_schemas.MicroJobResponse])
+@router.get("/microjobs", response_model=List[microjob_schemas.MicroJobResponse])
 def read_available_micro_jobs(db: Annotated[Session, Depends(database.get_db)]):
     """
     Retrieves all publicly available and active micro-jobs.
     """
     return microjobs_service.get_microjobs(db=db)
-
-# --- END OF CODE TO ADD ---
-
-
-# Add more endpoints here as they are developed
