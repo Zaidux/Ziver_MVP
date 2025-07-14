@@ -54,6 +54,19 @@ class TwoFASetupResponse(BaseModel):
 class UserLoginWith2FA(UserLogin):
     """Schema for a login attempt that *might* include a 2FA code."""
     two_fa_code: Optional[str] = Field(None, min_length=6, max_length=6, description="Optional 2FA code if required for login.")
+
+# --- ADD THESE TO app/schemas/user.py ---
+
+class TwoFAGenerationResponse(BaseModel):
+    """Response model for the 2FA generation endpoint."""
+    secret_key: str
+    qr_code_uri: str
+
+class TwoFAEnableRequest(BaseModel):
+    """Request model for enabling 2FA."""
+    secret_key: str
+    two_fa_code: str
+
 # --- END OF 2FA SCHEMAS ADDITION ---
 
 class TokenData(BaseModel):
