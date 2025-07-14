@@ -233,7 +233,7 @@ def perform_daily_checkin(
         ),
         "zp_claimed": zp_bonus,
         "new_zp_balance": current_user.zp_balance,
-    }
+
 
 # --- ADD THIS CODE TO YOUR api/v1/routes.py FILE ---
 
