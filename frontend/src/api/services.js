@@ -115,7 +115,7 @@ export const createSponsoredTask = async (taskData) => {
     try {
         const response = await axiosInstance.post('/api/v1/tasks/sponsor', taskData);
         return response.data;
-    } catch (error)
+    } catch (error) {
         console.error('Failed to create sponsored task:', error.response?.data || error.message);
         throw error;
     }
