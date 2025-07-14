@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext.jsx';
 import { getMyProfile, startMiningCycle, claimMinedZp, upgradeMiner } from '../api/services';
 
 // Import MUI Components
