@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext.jsx';
 import { useNavigate } from 'react-router-dom';
 import { getMyProfile, linkWallet } from '../api/services';
 import { TonConnectButton, useTonAddress } from '@tonconnect/ui-react';
