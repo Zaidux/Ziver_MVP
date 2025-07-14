@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://ziver-mvp-backend.onrender.com ';
+// This is the corrected line. It reads the variable from your Render environment.
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
