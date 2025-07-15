@@ -5,8 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import { generate2FA, enable2FA } from '../api/services';
 import {
   Container, Box, Typography, Button, TextField, Alert,
-  CircularProgress, Paper
+  CircularProgress, Paper, IconButton, InputAdornment
 } from '@mui/material';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
 function Enable2FAPage() {
   const [loading, setLoading] = useState(true);
@@ -35,10 +36,15 @@ function Enable2FAPage() {
     try {
       await enable2FA(twoFAInfo.secret_key, twoFACode);
       alert('2FA enabled successfully!');
-      navigate('/app/profile'); // Navigate back to profile on success
+      navigate('/app/profile');
     } catch (err) {
       setError(err.response?.data?.detail || 'Failed to enable 2FA.');
     }
+  };
+  
+  const handleCopyToClipboard = () => {
+    navigator.clipboard.writeText(twoFAInfo.secret_key);
+    alert('Secret Key Copied!');
   };
 
   if (loading) {
@@ -55,9 +61,31 @@ function Enable2FAPage() {
           <Typography>1. Scan this QR code with your authenticator app.</Typography>
           {error && !twoFAInfo && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
           {twoFAInfo?.qr_code_uri && (
-            <img src={twoFAInfo.qr_code_uri} alt="2FA QR Code" style={{ margin: '16px 0' }} />
+            <img src={twoFAInfo.qr_code_uri} alt="2FA QR Code" style={{ margin: '16px 0', display: 'block', marginInline: 'auto' }} />
           )}
-          <Typography sx={{ mt: 2 }}>
+
+          {/* New Section to Display Secret Key */}
+          {twoFAInfo?.secret_key && (
+            <Box>
+                <Typography variant="body2" sx={{mb: 1}}>Or enter this code manually:</Typography>
+                <TextField
+                    value={twoFAInfo.secret_key}
+                    fullWidth
+                    InputProps={{
+                        readOnly: true,
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton onClick={handleCopyToClipboard} edge="end">
+                                    <ContentCopyIcon />
+                                </IconButton>
+                            </InputAdornment>
+                        )
+                    }}
+                />
+            </Box>
+          )}
+
+          <Typography sx={{ mt: 3 }}>
             2. Enter the 6-digit code from your app below.
           </Typography>
           <TextField
