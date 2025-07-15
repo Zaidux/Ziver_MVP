@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useNavigate } from 'react-router-dom';
-import { getMyProfile, linkWallet, generate2FA, enable2FA } from '../api/services';
 import { TonConnectButton, useTonAddress } from '@tonconnect/ui-react';
 
 // Import MUI components
