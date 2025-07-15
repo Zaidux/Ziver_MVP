@@ -1,3 +1,5 @@
+# app/api/v1/routes.py
+
 """
 Main API router for the Ziver application.
 
@@ -125,6 +127,14 @@ def register_user(
                 detail="Twitter handle already taken",
             )
         db_user.twitter_handle = normalized_tt
+    
+    # --- New Referral Tracking Logic ---
+    if user.referrer_id:
+        try:
+            referrals_service.track_referral(db, user.referrer_id, user.email)
+        except HTTPException as e:
+            # Optionally log this, but don't block registration
+            print(f"Referral tracking failed during registration: {e.detail}")
 
     db.add(db_user)
     db.commit()
@@ -224,7 +234,7 @@ def perform_daily_checkin(
     if current_user.daily_streak_count >= 5:
         streak_bonus = settings.ZP_STREAK_BONUS # Assuming you add ZP_STREAK_BONUS = 50 to your settings
         zp_bonus += streak_bonus
-    
+
     current_user.last_checkin_date = today
     current_user.zp_balance += zp_bonus
     current_user.social_capital_score += zp_bonus
@@ -365,3 +375,35 @@ def read_available_micro_jobs(db: Annotated[Session, Depends(database.get_db)]):
     Retrieves all publicly available and active micro-jobs.
     """
     return microjobs_service.get_microjobs(db=db)
+
+# =================================================================
+#                         --- REFERRALS ---
+# =================================================================
+
+@router.get("/referrals", response_model=List[referral_schemas.ReferralResponse])
+def get_my_referrals(
+    current_user: Annotated[models.User, Depends(get_active_user)],
+    db: Annotated[Session, Depends(database.get_db)],
+):
+    """Retrieves a list of users referred by the current user."""
+    return referrals_service.get_referred_users(db, referrer_id=current_user.id)
+
+
+@router.post("/referrals/{referred_user_id}/ping", status_code=status.HTTP_200_OK)
+def ping_referral(
+    referred_user_id: int,
+    current_user: Annotated[models.User, Depends(get_active_user)],
+):
+    """Sends a ping to a referred user."""
+    # In a real app, you'd verify this user was actually referred by the current_user first
+    return referrals_service.ping_referred_user(referred_user_id)
+
+
+@router.delete("/referrals/{referral_id}", status_code=status.HTTP_200_OK)
+def remove_referral(
+    referral_id: int,
+    current_user: Annotated[models.User, Depends(get_active_user)],
+    db: Annotated[Session, Depends(database.get_db)],
+):
+    """Deletes a referral relationship."""
+    return referrals_service.delete_referral(db, referrer=current_user, referral_id=referral_id)
