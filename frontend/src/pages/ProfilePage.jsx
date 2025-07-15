@@ -18,12 +18,6 @@ function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // 2FA State
-  const [show2FASetup, setShow2FASetup] = useState(false);
-  const [twoFAInfo, setTwoFAInfo] = useState(null);
-  const [twoFACode, setTwoFACode] = useState('');
-  const [twoFAError, setTwoFAError] = useState('');
-
   const userFriendlyAddress = useTonAddress();
 
   const fetchProfile = useCallback(async () => {
