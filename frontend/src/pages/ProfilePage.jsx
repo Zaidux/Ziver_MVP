@@ -56,40 +56,6 @@ function ProfilePage() {
     navigate('/login');
   };
 
-  // --- 2FA Handlers ---
-  const handleEnable2FAClick = async () => {
-    setTwoFAError('');
-    try {
-      const data = await generate2FA();
-      setTwoFAInfo(data);
-      setShow2FASetup(true);
-    } catch (err) {
-      setTwoFAError(err.response?.data?.detail || 'Failed to start 2FA setup.');
-    }
-  };
-
-  const handleVerifyAndEnable2FA = async () => {
-    if (!twoFACode || !twoFAInfo?.secret_key) return;
-    setTwoFAError('');
-    try {
-      await enable2FA(twoFAInfo.secret_key, twoFACode);
-      alert('2FA enabled successfully!');
-      setShow2FASetup(false);
-      setTwoFAInfo(null);
-      setTwoFACode('');
-      fetchProfile(); // Refetch profile to update 2FA status
-    } catch (err) {
-      setTwoFAError(err.response?.data?.detail || 'Failed to enable 2FA.');
-    }
-  };
-
-  const handleClose2FADialog = () => {
-    setShow2FASetup(false);
-    setTwoFAInfo(null);
-    setTwoFAError('');
-    setTwoFACode('');
-  };
-
   const renderProfile = () => {
     if (loading) return <CircularProgress color="primary" sx={{ mt: 4 }} />;
     if (error) return <Alert severity="error" sx={{ mt: 4, width: '100%' }}>{error}</Alert>;
