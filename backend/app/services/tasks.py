@@ -14,7 +14,7 @@ from app.schemas import task as task_schemas
 
 
 def create_sponsored_task(
-    db: Session, user: models.User, task_data: sponsored_task_schemas.UserSponsoredTaskCreate
+    db: Session, user: models.User, task_data: sponsored_task_schemas.SponsoredTaskCreate
 ):
     """Deducts ZP from a user to create a user-sponsored task with an expiration."""
     duration_costs = {
@@ -128,3 +128,4 @@ def complete_task(db: Session, user: models.User, task_id: int):
         "new_zp_balance": user.zp_balance,
         "completion": db_completion,
     }
+
