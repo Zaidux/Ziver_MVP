@@ -1,69 +1,84 @@
-import { getMyProfile, linkWallet, generate2FA, enable2FA } from '../api/services';
+// src/pages/Enable2FAPage.jsx
 
-// 2FA State
-  const [show2FASetup, setShow2FASetup] = useState(false);
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { generate2FA, enable2FA } from '../api/services';
+import {
+  Container, Box, Typography, Button, TextField, Alert,
+  CircularProgress, Paper
+} from '@mui/material';
+
+function Enable2FAPage() {
+  const [loading, setLoading] = useState(true);
   const [twoFAInfo, setTwoFAInfo] = useState(null);
   const [twoFACode, setTwoFACode] = useState('');
-  const [twoFAError, setTwoFAError] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-// --- 2FA Handlers ---
-  const handleEnable2FAClick = async () => {
-    setTwoFAError('');
-    try {
-      const data = await generate2FA();
-      setTwoFAInfo(data);
-      setShow2FASetup(true);
-    } catch (err) {
-      setTwoFAError(err.response?.data?.detail || 'Failed to start 2FA setup.');
-    }
-  };
+  useEffect(() => {
+    const setup2FA = async () => {
+      try {
+        const data = await generate2FA();
+        setTwoFAInfo(data);
+      } catch (err) {
+        setError(err.response?.data?.detail || 'Failed to start 2FA setup.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    setup2FA();
+  }, []);
 
-  const handleVerifyAndEnable2FA = async () => {
+  const handleVerifyAndEnable = async () => {
     if (!twoFACode || !twoFAInfo?.secret_key) return;
-    setTwoFAError('');
+    setError('');
     try {
       await enable2FA(twoFAInfo.secret_key, twoFACode);
       alert('2FA enabled successfully!');
-      setShow2FASetup(false);
-      setTwoFAInfo(null);
-      setTwoFACode('');
-      fetchProfile(); // Refetch profile to update 2FA status
+      navigate('/app/profile'); // Navigate back to profile on success
     } catch (err) {
-      setTwoFAError(err.response?.data?.detail || 'Failed to enable 2FA.');
+      setError(err.response?.data?.detail || 'Failed to enable 2FA.');
     }
   };
 
-  const handleClose2FADialog = () => {
-    setShow2FASetup(false);
-    setTwoFAInfo(null);
-    setTwoFAError('');
-    setTwoFACode('');
-  };
+  if (loading) {
+    return <Container sx={{ textAlign: 'center', mt: 4 }}><CircularProgress /></Container>;
+  }
 
-{/* 2FA Setup Dialog */}
-      <Dialog open={show2FASetup} onClose={handleClose2FADialog}>
-        <DialogTitle>Enable Two-Factor Authentication</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            1. Scan the QR code with your authenticator app (e.g., Google Authenticator).
-          </DialogContentText>
-          {twoFAInfo?.qr_code_uri && <img src={twoFAInfo.qr_code_uri} alt="2FA QR Code" style={{ margin: '16px auto', display: 'block' }} />}
-          <DialogContentText sx={{ mt: 2 }}>
-            2. Enter the 6-digit code from your app to verify and activate 2FA.
-          </DialogContentText>
+  return (
+    <Container component="main" maxWidth="sm">
+      <Box sx={{ mt: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <Typography component="h1" variant="h4" color="primary" gutterBottom>
+          Enable 2FA
+        </Typography>
+        <Paper elevation={3} sx={{ p: 3, mt: 2, width: '100%', textAlign: 'center' }}>
+          <Typography>1. Scan this QR code with your authenticator app.</Typography>
+          {error && !twoFAInfo && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+          {twoFAInfo?.qr_code_uri && (
+            <img src={twoFAInfo.qr_code_uri} alt="2FA QR Code" style={{ margin: '16px 0' }} />
+          )}
+          <Typography sx={{ mt: 2 }}>
+            2. Enter the 6-digit code from your app below.
+          </Typography>
           <TextField
-            autoFocus margin="dense" id="2fa-code" label="Verification Code" type="text"
-            fullWidth variant="standard" value={twoFACode}
+            margin="normal" label="Verification Code" type="text"
+            fullWidth value={twoFACode}
             onChange={(e) => setTwoFACode(e.target.value)}
-            inputProps={{ maxLength: 6 }}
+            inputProps={{ maxLength: 6, style: { textAlign: 'center', fontSize: '1.5rem' } }}
           />
-          {twoFAError && <Alert severity="error" sx={{ mt: 2 }}>{twoFAError}</Alert>}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose2FADialog}>Cancel</Button>
-          <Button onClick={handleVerifyAndEnable2FA} variant="contained">Verify & Activate</Button>
-        </DialogActions>
-      </Dialog>
+          {error && twoFAInfo && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+          <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
+            <Button onClick={() => navigate('/app/profile')} fullWidth variant="outlined">
+              Cancel
+            </Button>
+            <Button onClick={handleVerifyAndEnable} fullWidth variant="contained">
+              Verify & Activate
+            </Button>
+          </Box>
+        </Paper>
+      </Box>
     </Container>
   );
 }
+
+export default Enable2FAPage;
