@@ -36,6 +36,7 @@ function App() {
         <Route path="tasks" element={<TasksPage />} />         {/* <-- ADD ROUTE */}
         <Route path="jobs" element={<MicroJobsPage />} />       {/* <-- ADD ROUTE */}
         <Route path="profile" element={<ProfilePage />} />       {/* <-- ADD ROUTE */}
+         <Route path="/profile/enable-2fa" element={<ProtectedRoute><Enable2FAPage /></ProtectedRoute>} />
       </Route>
       
     </Routes>
