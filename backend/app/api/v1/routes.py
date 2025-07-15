@@ -186,6 +186,8 @@ def read_users_me(current_user: Annotated[models.User, Depends(get_active_user)]
     return current_user
 
 
+# Replace the old link_ton_wallet function with this one
+
 @router.post("/users/me/link-wallet", response_model=user_schemas.UserResponse)
 def link_ton_wallet(
     wallet_data: wallet_schemas.WalletLinkRequest,
@@ -193,12 +195,18 @@ def link_ton_wallet(
     db: Annotated[Session, Depends(database.get_db)],
 ):
     """Links a TON wallet address to the current user's profile."""
-    if db.query(models.User).filter(
-        models.User.ton_wallet_address == wallet_data.wallet_address
-    ).first():
+    # This query now checks for a user with the same wallet AND a different user ID
+    conflicting_user = db.query(models.User).filter(
+        models.User.ton_wallet_address == wallet_data.wallet_address,
+        models.User.id != current_user.id  # <-- THE CRITICAL CHANGE IS HERE
+    ).first()
+
+    if conflicting_user:
         raise HTTPException(
-            status_code=409, detail="This wallet address is already linked to another account."
+            status_code=status.HTTP_409_CONFLICT,
+            detail="This wallet address is already linked to another account."
         )
+
     current_user.ton_wallet_address = wallet_data.wallet_address
     db.commit()
     db.refresh(current_user)
