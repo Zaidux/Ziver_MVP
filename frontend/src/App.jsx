@@ -9,6 +9,7 @@ import MiningPage from './pages/MiningPage';
 import TasksPage from './pages/TasksPage';         // <-- IMPORT
 import MicroJobsPage from './pages/MicroJobsPage'; // <-- IMPORT
 import ProfilePage from './pages/ProfilePage';     // <-- IMPORT
+import Enable2FAPage from './pages/Enable2FAPage';  // <--  NEW IMPORT
 
 // Import the layout and protection components
 import ProtectedRoute from './components/layout/ProtectedRoute';
