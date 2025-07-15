@@ -152,3 +152,35 @@ export const activateJob = async (jobId) => {
         throw error;
     }
 };
+
+// --- Referral Services ---
+
+export const getMyReferrals = async () => {
+  try {
+    const response = await axiosInstance.get('/api/v1/referrals');
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch referrals:', error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const pingReferral = async (referredUserId) => {
+  try {
+    const response = await axiosInstance.post(`/api/v1/referrals/${referredUserId}/ping`);
+    return response.data;
+  } catch (error) {
+    console.error('Failed to ping referral:', error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const deleteReferral = async (referralId) => {
+  try {
+    const response = await axiosInstance.delete(`/api/v1/referrals/${referralId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Failed to delete referral:', error.response?.data || error.message);
+    throw error;
+  }
+};
