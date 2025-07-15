@@ -351,6 +351,24 @@ def read_available_tasks(
     """
     return tasks_service.get_available_tasks(db=db, user_id=current_user.id)
 
+
+# --- ADD THIS NEW ENDPOINT ---
+@router.post(
+    "/tasks/sponsor",
+    response_model=sponsored_task_schemas.SponsoredTaskResponse, # Assuming you have this schema
+    status_code=status.HTTP_201_CREATED
+)
+def create_sponsored_task(
+    task_data: sponsored_task_schemas.SponsoredTaskCreate, # Assuming you have this schema
+    current_user: Annotated[models.User, Depends(get_active_user)],
+    db: Annotated[Session, Depends(database.get_db)],
+):
+    """
+    Allows a user to create and sponsor a new task by paying with ZP.
+    """
+    # This will call a function in your tasks_service to handle the logic
+    return tasks_service.create_sponsored_task(db, current_user, task_data)
+
 # =================================================================
 #                  --- MICRO-JOB MARKETPLACE ---
 # =================================================================
