@@ -1,23 +1,21 @@
+// src/pages/ProfilePage.jsx
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useNavigate } from 'react-router-dom';
+import { getMyProfile, linkWallet } from '../api/services';
 import { TonConnectButton, useTonAddress } from '@tonconnect/ui-react';
-
-// Import MUI components
 import {
   Box, Button, Container, Typography, CircularProgress, Alert, Paper,
-  List, ListItem, ListItemText, Divider, TextField, Dialog, DialogTitle,
-  DialogContent, DialogActions, DialogContentText,
+  List, ListItem, ListItemText, Divider,
 } from '@mui/material';
 
 function ProfilePage() {
   const { logout } = useAuth();
-  const navigate = useNavigate();
-
+  const navigate = useNavigate(); // Hook called at the top level
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-
   const userFriendlyAddress = useTonAddress();
 
   const fetchProfile = useCallback(async () => {
@@ -71,17 +69,16 @@ function ProfilePage() {
             <Divider />
             <ListItem><ListItemText primary="ZP Balance" secondary={profileData.zp_balance.toLocaleString()} /></ListItem>
             <Divider />
-            <ListItem>
+            <ListItem
+              secondaryAction={
+                !profileData.is_2fa_enabled && (
+                  <Button variant="outlined" onClick={() => navigate('/app/profile/enable-2fa')}>
+                    Enable
+                  </Button>
+                )
+              }
+            >
               <ListItemText primary="Two-Factor Authentication" secondary={profileData.is_2fa_enabled ? 'Enabled' : 'Disabled'} />
-              {!profileData.is_2fa_enabled && (
-                // In ProfilePage.jsx
-const navigate = useNavigate();
-
-// Change the button's onClick handler
-<Button variant="outlined" onClick={() => navigate('/profile/enable-2fa')}>
-  Enable
-</Button>
-              )}
             </ListItem>
           </List>
         </Paper>
@@ -98,6 +95,8 @@ const navigate = useNavigate();
         {renderProfile()}
         <Button onClick={handleLogout} fullWidth variant="contained" sx={{ mt: 4, mb: 2, py: 1.5, fontWeight: 'bold', backgroundColor: '#E60000', '&:hover': { backgroundColor: '#c40000' } }}>Logout</Button>
       </Box>
-
+    </Container>
+  );
+}
 
 export default ProfilePage;
