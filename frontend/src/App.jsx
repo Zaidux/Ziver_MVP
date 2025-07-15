@@ -10,9 +10,9 @@ import RegisterPage from './pages/RegisterPage';
 import MiningPage from './pages/MiningPage';
 import TasksPage from './pages/TasksPage';
 import MicroJobsPage from './pages/MicroJobsPage';
+import CreateMicroJobPage from './pages/CreateMicroJobPage'; // <-- IMPORT a
 import ProfilePage from './pages/ProfilePage';
 import Enable2FAPage from './pages/Enable2FAPage';
-// import CreateMicroJobPage from './pages/CreateMicroJobPage'; // You will create this next
 
 // Import the layout and protection components
 import ProtectedRoute from './components/layout/ProtectedRoute';
@@ -39,9 +39,9 @@ function App() {
         <Route path="mining" element={<MiningPage />} />
         <Route path="tasks" element={<TasksPage />} />
         <Route path="jobs" element={<MicroJobsPage />} />
-        {/* <Route path="jobs/new" element={<CreateMicroJobPage />} /> */} {/* For when you create the page */}
+        <Route path="jobs/new" element={<CreateMicroJobPage />} /> {/* <-- UNCOMMENT AND ADD ROUTE */}
         <Route path="profile" element={<ProfilePage />} />
-        <Route path="profile/enable-2fa" element={<Enable2FAPage />} /> {/* Corrected Path */}
+        <Route path="profile/enable-2fa" element={<Enable2FAPage />} />
       </Route>
 
     </Routes>
