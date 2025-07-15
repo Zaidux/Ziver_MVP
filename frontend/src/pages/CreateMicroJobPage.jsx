@@ -14,6 +14,7 @@ function CreateMicroJobPage() {
     description: '',
     verification_criteria: '',
     ton_payment_amount: 0.1,
+    ziver_fee_percentage: 0.05, // <-- LINE ADDED
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
