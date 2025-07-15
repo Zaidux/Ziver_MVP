@@ -1,6 +1,6 @@
 # Ziver: The Open Hack MVP
 
-![Ziver Logo](https://place-your-logo-url-here.com/logo.png) **Ziver is a pioneering multi-blockchain platform built on TON, designed to transform user engagement into tangible value through a gamified Telegram Mini App (TMA).**
+![Ziver Logo](https://olive-deliberate-piranha-369.mypinata.cloud/ipfs/QmdKf7XTWwcuV1t7g51haWDiCiMXNFoDGMUjX8BSLGLGto ) **Ziver is a pioneering multi-blockchain platform built on TON, designed to transform user engagement into tangible value through a gamified Telegram Mini App (TMA).**
 
 Our MVP for **The Open Hack** focuses on creating a sustainable, monetized engagement loop within the TON ecosystem, introducing a unique "Social Capital" concept that rewards users for their activity and reputation.
 
