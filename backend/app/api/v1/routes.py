@@ -200,7 +200,7 @@ def perform_daily_checkin(
     current_user: Annotated[models.User, Depends(get_active_user)],
     db: Annotated[Session, Depends(database.get_db)],
 ):
-    """Allows a user to perform a daily check-in for a ZP bonus."""
+    """Allows a user to perform a daily check-in for a ZP bonus and streak rewards."""
     today = datetime.now(timezone.utc).date()
     if current_user.last_checkin_date == today:
         raise HTTPException(
@@ -216,19 +216,31 @@ def perform_daily_checkin(
     if is_consecutive:
         current_user.daily_streak_count += 1
     else:
+        # Reset streak if the last check-in was not yesterday
         current_user.daily_streak_count = 1
 
+    # Add streak bonus if the streak is 5 days or longer
+    streak_bonus = 0
+    if current_user.daily_streak_count >= 5:
+        streak_bonus = settings.ZP_STREAK_BONUS # Assuming you add ZP_STREAK_BONUS = 50 to your settings
+        zp_bonus += streak_bonus
+    
     current_user.last_checkin_date = today
     current_user.zp_balance += zp_bonus
     current_user.social_capital_score += zp_bonus
     db.add(current_user)
     db.commit()
     db.refresh(current_user)
+
+    message = (
+        f"Daily check-in successful! You received {settings.ZP_DAILY_CHECKIN_BONUS} ZP. "
+        f"Current streak: {current_user.daily_streak_count} days."
+    )
+    if streak_bonus > 0:
+        message += f" You also received a streak bonus of {streak_bonus} ZP!"
+
     return {
-        "message": (
-            f"Daily check-in successful! You received {zp_bonus} ZP. "
-            f"Current streak: {current_user.daily_streak_count} days."
-        ),
+        "message": message,
         "zp_claimed": zp_bonus,
         "new_zp_balance": current_user.zp_balance,
     }
