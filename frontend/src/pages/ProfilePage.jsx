@@ -93,32 +93,5 @@ function ProfilePage() {
         <Button onClick={handleLogout} fullWidth variant="contained" sx={{ mt: 4, mb: 2, py: 1.5, fontWeight: 'bold', backgroundColor: '#E60000', '&:hover': { backgroundColor: '#c40000' } }}>Logout</Button>
       </Box>
 
-      {/* 2FA Setup Dialog */}
-      <Dialog open={show2FASetup} onClose={handleClose2FADialog}>
-        <DialogTitle>Enable Two-Factor Authentication</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            1. Scan the QR code with your authenticator app (e.g., Google Authenticator).
-          </DialogContentText>
-          {twoFAInfo?.qr_code_uri && <img src={twoFAInfo.qr_code_uri} alt="2FA QR Code" style={{ margin: '16px auto', display: 'block' }} />}
-          <DialogContentText sx={{ mt: 2 }}>
-            2. Enter the 6-digit code from your app to verify and activate 2FA.
-          </DialogContentText>
-          <TextField
-            autoFocus margin="dense" id="2fa-code" label="Verification Code" type="text"
-            fullWidth variant="standard" value={twoFACode}
-            onChange={(e) => setTwoFACode(e.target.value)}
-            inputProps={{ maxLength: 6 }}
-          />
-          {twoFAError && <Alert severity="error" sx={{ mt: 2 }}>{twoFAError}</Alert>}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose2FADialog}>Cancel</Button>
-          <Button onClick={handleVerifyAndEnable2FA} variant="contained">Verify & Activate</Button>
-        </DialogActions>
-      </Dialog>
-    </Container>
-  );
-}
 
 export default ProfilePage;
