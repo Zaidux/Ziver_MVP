@@ -25,16 +25,21 @@ app = FastAPI(
     openapi_url="/openapi.json"
 )
 
+# A list of allowed origins. These are the URLs that can make requests to your API.
+origins = [
+    "https://ziver-mvp-frontend.onrender.com",  # Your deployed frontend
+    "http://localhost:8080",                   # Your local dev URL
+    "http://localhost:8000",                   # Your local dev URL
+    "http://localhost:5173",                   # Default Vite dev URL (common)
+]
+
 # Configure Cross-Origin Resource Sharing (CORS)
-# This allows your frontend application to make requests to this backend.
-# For development, allow_origins=["*"] is fine.
-# For production, you should restrict this to your frontend's domain.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,      # Use the specific list of origins
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],        # Allows all methods (GET, POST, etc.)
+    allow_headers=["*"],        # Allows all headers
 )
 
 # Include all the API endpoints from the v1 router WITH the /api/v1 prefix
