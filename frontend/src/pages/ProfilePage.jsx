@@ -74,7 +74,13 @@ function ProfilePage() {
             <ListItem>
               <ListItemText primary="Two-Factor Authentication" secondary={profileData.is_2fa_enabled ? 'Enabled' : 'Disabled'} />
               {!profileData.is_2fa_enabled && (
-                <Button variant="outlined" onClick={handleEnable2FAClick}>Enable</Button>
+                // In ProfilePage.jsx
+const navigate = useNavigate();
+
+// Change the button's onClick handler
+<Button variant="outlined" onClick={() => navigate('/profile/enable-2fa')}>
+  Enable
+</Button>
               )}
             </ListItem>
           </List>
