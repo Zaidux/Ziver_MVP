@@ -8,6 +8,7 @@ import MiningIcon from '@mui/icons-material/Whatshot';
 import TasksIcon from '@mui/icons-material/CheckCircle';
 import JobsIcon from '@mui/icons-material/Work';
 import ProfileIcon from '@mui/icons-material/Person';
+import PeopleIcon from '@mui/icons-material/People'; // <-- Import new icon
 
 function BottomNav() {
   const theme = useTheme(); // Access the current theme
@@ -62,6 +63,18 @@ function BottomNav() {
         <JobsIcon />
         <span>Jobs</span>
       </NavLink>
+      <NavLink 
+        to="/app/profile" 
+        style={({ isActive }) => ({ ...linkStyle, ...(isActive ? activeLinkStyle : {}) })}
+
+      <NavLink 
+        to="/app/referrals" // <-- ADD NEW NAVLINK
+        style={({ isActive }) => ({ ...linkStyle, ...(isActive ? activeLinkStyle : {}) })}
+      >
+        <PeopleIcon />
+        <span>Refer</span>
+      </NavLink>
+
       <NavLink 
         to="/app/profile" 
         style={({ isActive }) => ({ ...linkStyle, ...(isActive ? activeLinkStyle : {}) })}
