@@ -37,13 +37,20 @@ function ProfilePage() {
   }, [fetchProfile]);
 
   useEffect(() => {
-    if (userFriendlyAddress && profileData && !profileData.ton_wallet_address) {
+    // Only try to link if a wallet is connected AND it's not already the one on file
+    if (userFriendlyAddress && profileData && userFriendlyAddress !== profileData.ton_wallet_address) {
+      // Also, don't try to link if a wallet is already linked to the profile, to avoid repeated alerts
+      if (profileData.ton_wallet_address) {
+        return; 
+      }
+
       const linkUserWallet = async () => {
         try {
           await linkWallet(userFriendlyAddress);
           alert('Wallet linked successfully!');
-          fetchProfile();
+          fetchProfile(); // Refetch profile to show the linked address
         } catch (err) {
+          // Now, this alert will only show up on a genuine attempt to link a duplicate wallet
           alert(err.response?.data?.detail || 'Failed to link wallet.');
         }
       };
