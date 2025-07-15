@@ -2,17 +2,19 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useTheme } from '../context/ThemeContext.jsx'; // Import the useTheme hook
 import { useNavigate } from 'react-router-dom';
 import { getMyProfile, linkWallet } from '../api/services';
 import { TonConnectButton, useTonAddress } from '@tonconnect/ui-react';
 import {
   Box, Button, Container, Typography, CircularProgress, Alert, Paper,
-  List, ListItem, ListItemText, Divider,
+  List, ListItem, ListItemText, Divider, Switch
 } from '@mui/material';
 
 function ProfilePage() {
   const { logout } = useAuth();
-  const navigate = useNavigate(); // Hook called at the top level
+  const navigate = useNavigate();
+  const { mode, toggleTheme } = useTheme(); // Get theme state and toggle function
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -79,6 +81,19 @@ function ProfilePage() {
               }
             >
               <ListItemText primary="Two-Factor Authentication" secondary={profileData.is_2fa_enabled ? 'Enabled' : 'Disabled'} />
+            </ListItem>
+            <Divider />
+            {/* New Theme Switcher ListItem */}
+            <ListItem
+              secondaryAction={
+                <Switch
+                  edge="end"
+                  onChange={toggleTheme}
+                  checked={mode === 'dark'}
+                />
+              }
+            >
+              <ListItemText primary="Dark Mode" />
             </ListItem>
           </List>
         </Paper>
