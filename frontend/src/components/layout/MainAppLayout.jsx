@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import BottomNav from './ButtomNav';
+import BottomNav from './BottomNav';
 
 const layoutStyle = {
   // Add padding to the bottom to ensure content isn't hidden by the nav bar
